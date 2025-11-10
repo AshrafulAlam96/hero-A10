@@ -1,12 +1,57 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "daisyui";
 
-/* small custom styles */
 body {
-  @apply bg-base-100;
+  @apply bg-black;
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
 }
 
 .container {
   max-width: 1280px;
+  margin: 0 auto;
+}
+
+.btn {
+  border-radius: 0.5rem;
+}
+
+/* small responsive tweaks */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+.swiper-pagination-bullet {
+  background: white !important;
+  opacity: 0.8;
+}
+
+.swiper-pagination-bullet-active {
+  background: #38bdf8 !important;
+  /* Tailwind sky-400 */
 }
