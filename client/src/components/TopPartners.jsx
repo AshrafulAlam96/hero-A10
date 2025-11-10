@@ -2,9 +2,9 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 const dummy = [
-  { id: '1', name: 'Aisha Rahman', subject: 'Mathematics', rating: 4.8, profileimage: '' },
-  { id: '2', name: 'Rafi Ahmed', subject: 'Physics', rating: 4.7, profileimage: '' },
-  { id: '3', name: 'Mina Khan', subject: 'English', rating: 4.6, profileimage: '' },
+  { id: '1', name: 'Aisha Rahman', subject: 'Mathematics', rating: 4.8, profileimage: 'https://randomuser.me/api/portraits/women/68.jpg' },
+  { id: '2', name: 'Rafi Ahmed', subject: 'Physics', rating: 4.7, profileimage: 'https://randomuser.me/api/portraits/men/32.jpg' },
+  { id: '3', name: 'Mina Khan', subject: 'English', rating: 4.6, profileimage: 'https://randomuser.me/api/portraits/women/22.jpg' },
 ]
 
 export default function TopPartners() {
@@ -13,7 +13,9 @@ export default function TopPartners() {
       {dummy.map(p => (
         <div key={p.id} className="card bg-white shadow p-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div className="w-12 h-12 bg-gray-200 rounded-full">
+              <img src={p.profileimage} alt="" className='w-12 h-12 bg-gray-200 rounded-full' />
+            </div>
             <div>
               <div className="font-semibold">{p.name}</div>
               <div className="text-sm">{p.subject}</div>
