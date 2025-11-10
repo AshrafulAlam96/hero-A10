@@ -12,7 +12,7 @@ app.use(express.json());
 // ------------------------------
 const port = 5000;
 
-// 👉 Your MongoDB connection string (edit username, password, cluster name, and db)
+// 👉 Your MongoDB connection string (update username, password, cluster, db)
 const uri =
   "mongodb+srv://hero-a10-u01:LnbcvrnPHg9imLuI@cluster0.9busnhf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
@@ -29,6 +29,7 @@ const client = new MongoClient(uri, {
 });
 
 let partnerCollection;
+let requestCollection;
 
 // ------------------------------
 // MongoDB Connection
@@ -38,6 +39,7 @@ async function connectDB() {
     await client.connect();
     const db = client.db(dbName);
     partnerCollection = db.collection("partners");
+    requestCollection = db.collection("requests");
     console.log("✅ Connected to MongoDB Atlas successfully!");
   } catch (error) {
     console.error("❌ MongoDB connection failed:", error);
@@ -53,10 +55,8 @@ app.get("/", (req, res) => {
 });
 
 // ------------------------------
-// CRUD Operations
+// PARTNERS CRUD
 // ------------------------------
-
-// ➕ CREATE Partner (POST)
 app.post("/api/partners", async (req, res) => {
   try {
     const partner = req.body;
@@ -67,7 +67,6 @@ app.post("/api/partners", async (req, res) => {
   }
 });
 
-// 📖 READ All Partners (GET)
 app.get("/api/partners", async (req, res) => {
   try {
     const partners = await partnerCollection.find().toArray();
@@ -77,7 +76,6 @@ app.get("/api/partners", async (req, res) => {
   }
 });
 
-// 📖 READ Partner by ID (GET)
 app.get("/api/partners/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -89,7 +87,6 @@ app.get("/api/partners/:id", async (req, res) => {
   }
 });
 
-// ✏️ UPDATE Partner (PUT)
 app.put("/api/partners/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -106,7 +103,6 @@ app.put("/api/partners/:id", async (req, res) => {
   }
 });
 
-// ❌ DELETE Partner (DELETE)
 app.delete("/api/partners/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -120,13 +116,114 @@ app.delete("/api/partners/:id", async (req, res) => {
 });
 
 // ------------------------------
+// REQUESTS CRUD + STATUS UPDATE
+// ------------------------------
+
+// ➕ Send Request (POST)
+app.post("/api/requests", async (req, res) => {
+  try {
+    const { partnerId, requestedBy, message } = req.body;
+    if (!partnerId || !requestedBy)
+      return res.status(400).json({ message: "Missing partnerId or requestedBy" });
+
+    // prevent duplicates
+    const existing = await requestCollection.findOne({ partnerId, requestedBy });
+    if (existing)
+      return res.status(409).json({ message: "You already requested this partner" });
+
+    const partner = await partnerCollection.findOne({ _id: new ObjectId(partnerId) });
+    if (!partner) return res.status(404).json({ message: "Partner not found" });
+
+    const requestDoc = {
+      partnerId,
+      partnerName: partner.name,
+      partnerImage: partner.profileimage,
+      subject: partner.subject,
+      studyMode: partner.studyMode,
+      requestedBy,
+      message: message || "",
+      status: "pending",
+      createdAt: new Date(),
+    };
+
+    await requestCollection.insertOne(requestDoc);
+    await partnerCollection.updateOne(
+      { _id: new ObjectId(partnerId) },
+      { $inc: { partnerCount: 1 } }
+    );
+
+    res.status(201).json({ message: "Request sent successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to send request", error: err.message });
+  }
+});
+
+// 📋 Get All Requests by User (GET)
+app.get("/api/requests", async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) return res.status(400).json({ message: "Email required" });
+
+    const requests = await requestCollection
+      .find({ requestedBy: email })
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    res.status(200).json(requests);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch requests", error: err.message });
+  }
+});
+
+// ❌ Cancel Request (DELETE)
+app.delete("/api/requests/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const existing = await requestCollection.findOne({ _id: new ObjectId(id) });
+    if (!existing) return res.status(404).json({ message: "Request not found" });
+
+    await requestCollection.deleteOne({ _id: new ObjectId(id) });
+    await partnerCollection.updateOne(
+      { _id: new ObjectId(existing.partnerId) },
+      { $inc: { partnerCount: -1 } }
+    );
+
+    res.status(200).json({ message: "Request cancelled successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to cancel request", error: err.message });
+  }
+});
+
+// ✏️ Update Request Status (PATCH)
+app.patch("/api/requests/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { status } = req.body;
+
+    if (!["accepted", "rejected"].includes(status))
+      return res.status(400).json({ message: "Invalid status value" });
+
+    const result = await requestCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { status } }
+    );
+
+    if (result.matchedCount === 0)
+      return res.status(404).json({ message: "Request not found" });
+
+    res.status(200).json({ message: `Request ${status}` });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update request status", error: err.message });
+  }
+});
+
+// ------------------------------
 // Start Server
 // ------------------------------
 app.listen(port, () => {
   console.log(`🚀 StudyMate server running on port ${port}`);
 });
 
-// Optional: Close MongoDB client when server stops
 process.on("SIGINT", async () => {
   console.log("Closing MongoDB connection...");
   await client.close();
