@@ -1,46 +1,50 @@
-const express = require('express')
-const router = express.Router()
-const Partner = require('../models/Partner')
-app.use('/api/partners', require('./routes/partnerRoutes'))
+// routes/partnerRoutes.js
+const express = require("express");
+const { ObjectId } = require("mongodb");
+const router = express.Router();
 
-// GET all partners
-router.get('/', async (req, res) => {
+// 🟢 GET all partners
+router.get("/", async (req, res) => {
   try {
-    const { search, sortBy } = req.query
-    let filter = {}
-    if (search) filter.subject = { $regex: search, $options: 'i' }
-    let query = Partner.find(filter)
-    query = sortBy === 'experience'
-      ? query.sort({ experienceLevel: 1 })
-      : query.sort({ rating: -1 })
-    const partners = await query.exec()
-    res.json(partners)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ message: 'Server error' })
+    const db = req.app.locals.db;
+    const partners = await db.collection("partners").find().toArray();
+    res.status(200).json(partners);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching partners", error: error.message });
   }
-})
+});
 
-// GET by id
-router.get('/:id', async (req, res) => {
+// 🟢 GET partner by ID
+router.get("/:id", async (req, res) => {
   try {
-    const partner = await Partner.findById(req.params.id)
-    if (!partner) return res.status(404).json({ message: 'Partner not found' })
-    res.json(partner)
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' })
+    const db = req.app.locals.db;
+    const { id } = req.params;
+    const partner = await db.collection("partners").findOne({ _id: new ObjectId(id) });
+    if (!partner) return res.status(404).json({ message: "Partner not found" });
+    res.status(200).json(partner);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching partner", error: error.message });
   }
-})
+});
 
-// POST new partner
-router.post('/', async (req, res) => {
+// 🟢 POST create new partner
+router.post("/", async (req, res) => {
   try {
-    const partner = new Partner(req.body)
-    await partner.save()
-    res.status(201).json(partner)
-  } catch (err) {
-    res.status(400).json({ message: 'Invalid data', error: err.message })
-  }
-})
+    const db = req.app.locals.db;
+    const partner = req.body;
 
-module.exports = router
+    if (!partner.name || !partner.subject || !partner.email) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    partner.rating = partner.rating || 0;
+    partner.partnerCount = partner.partnerCount || 0;
+
+    const result = await db.collection("partners").insertOne(partner);
+    res.status(201).json({ message: "Partner added successfully", id: result.insertedId });
+  } catch (error) {
+    res.status(500).json({ message: "Error adding partner", error: error.message });
+  }
+});
+
+module.exports = router;
