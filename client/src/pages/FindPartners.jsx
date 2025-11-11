@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { fetchPartners, sendRequest } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
+import toast from "react-hot-toast";
+
 export default function FindPartners() {
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,18 +25,18 @@ export default function FindPartners() {
   }, []);
 
   const handleRequest = async (partnerId) => {
-    try {
-      await sendRequest({
-        partnerId,
-        requestedBy: user?.email || "test@example.com",
-        message: "Let’s study together!",
-      });
-      alert("Request sent successfully!");
-    } catch (err) {
-      alert("Failed to send request.");
-      console.error(err);
-    }
-  };
+  try {
+    await sendRequest({
+      partnerId,
+      requestedBy: user?.email || "test@example.com",
+      message: "Let's study together!",
+    });
+    toast.success("Request sent successfully!");
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to send request.");
+  }
+};
 
   if (loading) return <p className="text-center mt-10">Loading partners...</p>;
 

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
+import toast from "react-hot-toast";
+
 export default function Profile() {
   const { user, updateUserProfile } = useAuth();
   const [name, setName] = useState(user?.displayName || "");
@@ -8,18 +10,17 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      await updateUserProfile({ displayName: name, photoURL: photo });
-      alert("Profile updated successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update profile");
-    } finally {
-      setLoading(false);
-    }
-  };
+  e.preventDefault();
+  try {
+    setLoading(true);
+    await updateUserProfile({ displayName: name, photoURL: photo });
+    toast.success("Profile updated successfully!");
+  } catch {
+    toast.error("Failed to update profile.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (!user)
     return <p className="text-center mt-10 text-gray-500">Please log in first.</p>;
