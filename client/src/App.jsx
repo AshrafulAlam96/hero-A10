@@ -1,8 +1,10 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
+
 import MyConnections from "./pages/MyConnections";
 import Home from './pages/Home'
 import FindPartners from './pages/FindPartners'
+import Profile from "./pages/Profile"
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Navbar from './components/Navbar'
@@ -28,6 +30,7 @@ export default function App() {
           />
 
           <Route path="/find-partners" element={<FindPartners />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
