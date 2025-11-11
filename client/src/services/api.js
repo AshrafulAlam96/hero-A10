@@ -1,15 +1,21 @@
-import axios from 'axios'
+// src/services/api.js
+const API_BASE = "http://localhost:5000/api";
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api'
+export async function fetchRequests(email) {
+  const res = await fetch(`${API_BASE}/requests?email=${email}`);
+  return res.json();
+}
 
-export const api = axios.create({
-  baseURL: API_BASE,
-  headers: { 'Content-Type': 'application/json' },
-})
+export async function updateRequestStatus(id, status) {
+  const res = await fetch(`${API_BASE}/requests/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }),
+  });
+  return res.json();
+}
 
-export const getPartners = (params = {}) => api.get('/partners', { params })
-export const getPartner = (id) => api.get(`/partners/${id}`)
-export const createPartner = (data) => api.post('/partners', data)
-export const sendRequest = (data) => api.post('/requests', data)
-export const getRequestsByEmail = (email) => api.get('/requests', { params: { email } })
-export const deleteRequest = (id) => api.delete(`/requests/${id}`)
+export async function deleteRequest(id) {
+  const res = await fetch(`${API_BASE}/requests/${id}`, { method: "DELETE" });
+  return res.json();
+}

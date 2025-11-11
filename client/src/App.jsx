@@ -1,5 +1,6 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
+import MyConnections from "./pages/MyConnections";
 import Home from './pages/Home'
 import FindPartners from './pages/FindPartners'
 import Login from './pages/Login'
@@ -14,6 +15,7 @@ export default function App() {
       <main className="flex-grow container mx-auto px-4 py-6">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/my-connections" element={<MyConnections />} />
           <Route path="/find-partners" element={<FindPartners />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
