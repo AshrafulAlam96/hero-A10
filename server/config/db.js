@@ -1,10 +1,13 @@
 // server/config/db.js
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
-const uri ="mongodb+srv://hero-a10-u01:LnbcvrnPHg9imLuI@cluster0.9busnhf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = "mongodb+srv://hero-a10-u01:LnbcvrnPHg9imLuI@cluster0.9busnhf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const dbName = "studymateDB";
 
+// ✅ Force TLS and allow self-signed certs (fixes Windows SSL issue)
 const client = new MongoClient(uri, {
+  tls: true,
+  tlsAllowInvalidCertificates: true,
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
@@ -22,7 +25,7 @@ async function connectDB() {
     requestCollection = db.collection("requests");
     console.log("✅ MongoDB Connected Successfully!");
   } catch (err) {
-    console.error("❌ MongoDB Connection Failed:", err);
+    console.error("❌ MongoDB Connection Failed:", err.message);
   }
 }
 
