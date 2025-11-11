@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchPartners, sendRequest } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
+import PartnerModal from "../components/PartnerModal";
 
 const FindPartners = () => {
   const [partners, setPartners] = useState([]);
@@ -10,7 +11,9 @@ const FindPartners = () => {
   const [sending, setSending] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("");
+  const [selectedPartner, setSelectedPartner] = useState(null);
   const { user } = useAuth();
+
 
   // 🧩 Load all partners
   useEffect(() => {
@@ -158,25 +161,43 @@ const FindPartners = () => {
                 )}
               </div>
 
-              {/* Button */}
-              <div className="mt-4 flex flex-col items-center">
-                <button
-                  onClick={() => handleSendRequest(partner._id)}
-                  disabled={sending === partner._id}
-                  className={`px-4 py-2 rounded-md text-white font-medium ${
-                    sending === partner._id
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700"
-                  }`}
-                >
-                  {sending === partner._id ? "Sending..." : "Send Request"}
-                </button>
-              </div>
+{/* Buttons */}
+<div className="mt-4 flex flex-col items-center space-y-2">
+  <button
+    onClick={() => setSelectedPartner(partner)} // open modal
+    className="px-4 py-2 rounded-md border border-gray-400 hover:bg-gray-200 text-gray-700 font-medium"
+  >
+    View Details
+  </button>
+
+  <button
+    onClick={() => handleSendRequest(partner._id)}
+    disabled={sending === partner._id}
+    className={`px-4 py-2 rounded-md text-white font-medium ${
+      sending === partner._id
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-blue-600 hover:bg-blue-700"
+    }`}
+  >
+    {sending === partner._id ? "Sending..." : "Send Request"}
+  </button>
+</div>
+
             </div>
           ))}
         </div>
       )}
+
+      {selectedPartner && (
+  <PartnerModal
+    partner={selectedPartner}
+    onClose={() => setSelectedPartner(null)}
+    onSendRequest={handleSendRequest}
+    sending={sending}
+  />
+)}
     </div>
+    
   );
 };
 
