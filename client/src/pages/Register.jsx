@@ -1,56 +1,63 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+// import { Eye, EyeOff } from "lucide-react";
 
 const Register = () => {
+  const { signup, googleLogin } = useAuth();
+  const navigate = useNavigate();
+  const [showPass, setShowPass] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
+    photo: "",
     email: "",
     password: "",
-    photo: "",
   });
 
-  const { signup } = useAuth();
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const { name, email, password, photo } = formData;
-
-    if (!email || !password) {
-      toast.error("Email and password are required!");
-      return;
-    }
-
     try {
-      await signup(email, password, name, photo);
+      await signup(formData.email, formData.password, formData.name, formData.photo);
       toast.success("Account created successfully 🎉");
-      navigate("/my-connections"); // redirect to dashboard or protected route
-    } catch (error) {
-      console.error("Signup Error:", error.code);
-      toast.error(error.message || "Signup failed!");
+      navigate("/my-connections");
+    } catch (err) {
+      toast.error("Signup failed");
+    }
+  };
+
+  const handleGoogle = async () => {
+    try {
+      await googleLogin();
+      toast.success("Google signup successful");
+      navigate("/my-connections");
+    } catch {
+      toast.error("Google signup failed");
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-200">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h1 className="text-2xl font-bold mb-6 text-center">Create Account</h1>
+    <div className="flex justify-center items-center min-h-screen bg-[#050814]">
+      <div className="bg-[#101426] text-white w-96 p-8 rounded-2xl shadow-lg">
+        <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
             name="name"
             placeholder="Full Name"
-            className="w-full border p-2 rounded"
-            value={formData.name}
+            className="w-full p-3 rounded bg-[#1A1E33] border border-gray-700 focus:outline-none"
+            onChange={handleChange}
+          />
+
+          <input
+            type="text"
+            name="photo"
+            placeholder="Photo URL"
+            className="w-full p-3 rounded bg-[#1A1E33] border border-gray-700 focus:outline-none"
             onChange={handleChange}
           />
 
@@ -58,44 +65,61 @@ const Register = () => {
             type="email"
             name="email"
             placeholder="Email"
-            className="w-full border p-2 rounded"
-            value={formData.email}
+            className="w-full p-3 rounded bg-[#1A1E33] border border-gray-700 focus:outline-none"
             onChange={handleChange}
             required
           />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            className="w-full border p-2 rounded"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-
-          <input
-            type="text"
-            name="photo"
-            placeholder="Photo URL (optional)"
-            className="w-full border p-2 rounded"
-            value={formData.photo}
-            onChange={handleChange}
-          />
+          <div className="relative">
+            <input
+              type={showPass ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              className="w-full p-3 rounded bg-[#1A1E33] border border-gray-700 focus:outline-none"
+              onChange={handleChange}
+              required
+            />
+            <span
+              onClick={() => setShowPass(!showPass)}
+              className="absolute right-3 top-3 cursor-pointer text-gray-400"
+            >
+              {/* {showPass ? <EyeOff size={20} /> : <Eye size={20} />} */}
+            </span>
+          </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+            className="w-full bg-indigo-600 py-2 rounded-lg hover:bg-indigo-700 transition"
           >
             Register
           </button>
         </form>
 
-        <p className="text-center text-sm mt-4">
+        <div className="flex items-center gap-2 my-4">
+          <hr className="flex-grow border-gray-700" />
+          <span className="text-gray-400 text-sm">OR</span>
+          <hr className="flex-grow border-gray-700" />
+        </div>
+
+        <button
+          onClick={handleGoogle}
+          className="w-full border border-gray-600 py-2 rounded-lg hover:bg-[#1A1E33] transition"
+        >
+          <span className="flex items-center justify-center gap-2">
+            <img
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="Google"
+              className="w-5 h-5"
+            />
+            Continue with Google
+          </span>
+        </button>
+
+        <p className="text-center text-sm mt-4 text-gray-400">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="text-blue-400 hover:underline">
             Login
-          </a>
+          </Link>
         </p>
       </div>
     </div>
