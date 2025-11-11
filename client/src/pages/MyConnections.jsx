@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { fetchRequests, updateRequestStatus, deleteRequest } from "../services/api";
 import RequestCard from "../components/RequestCard";
 import { useAuth } from "../context/AuthContext";
-import {
-  fetchRequests,
-  updateRequestStatus,
-  deleteRequest,
-} from "../services/api";
+
 
 const MyConnections = () => {
   const [requests, setRequests] = useState([]);

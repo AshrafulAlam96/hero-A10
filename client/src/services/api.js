@@ -1,8 +1,37 @@
 // src/services/api.js
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "http://localhost:5000/api"; // ✅ change to your backend URL if deployed
 
-export async function fetchRequests(email) {
-  const res = await fetch(`${API_BASE}/requests?email=${email}`);
+// ---------- PARTNERS ----------
+export async function fetchPartners() {
+  const res = await fetch(`${API_BASE}/partners`);
+  if (!res.ok) throw new Error("Failed to fetch partners");
+  return res.json();
+}
+
+export async function createPartner(data) {
+  const res = await fetch(`${API_BASE}/partners`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to create partner");
+  return res.json();
+}
+
+// ---------- CONNECTION REQUESTS ----------
+export async function fetchRequests(userEmail) {
+  const res = await fetch(`${API_BASE}/requests?email=${encodeURIComponent(userEmail)}`);
+  if (!res.ok) throw new Error("Failed to fetch requests");
+  return res.json();
+}
+
+export async function sendRequest(requestData) {
+  const res = await fetch(`${API_BASE}/requests`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(requestData),
+  });
+  if (!res.ok) throw new Error("Failed to send request");
   return res.json();
 }
 
@@ -12,10 +41,14 @@ export async function updateRequestStatus(id, status) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status }),
   });
+  if (!res.ok) throw new Error("Failed to update request");
   return res.json();
 }
 
 export async function deleteRequest(id) {
-  const res = await fetch(`${API_BASE}/requests/${id}`, { method: "DELETE" });
+  const res = await fetch(`${API_BASE}/requests/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete request");
   return res.json();
 }
