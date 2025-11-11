@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import RequestCard from "../components/RequestCard";
+import { useAuth } from "../context/AuthContext";
 import {
   fetchRequests,
   updateRequestStatus,
@@ -11,7 +12,10 @@ const MyConnections = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null); // ✅ Track active request
-  const userEmail = "ashraf@gmail.com"; // ⚠️ Replace with real logged-in user later
+  
+  const { user } = useAuth();
+  const userEmail = user?.email;
+
 
   useEffect(() => {
     async function loadData() {
