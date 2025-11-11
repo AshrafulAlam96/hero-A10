@@ -1,129 +1,183 @@
 import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { fetchPartners, sendRequest } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
-export default function FindPartners() {
+const FindPartners = () => {
   const [partners, setPartners] = useState([]);
-  const [filteredPartners, setFilteredPartners] = useState([]);
+  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [filterSubject, setFilterSubject] = useState("");
+  const [sending, setSending] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption, setSortOption] = useState("");
   const { user } = useAuth();
 
-  // 🧠 Fetch partners from backend
+  // 🧩 Load all partners
   useEffect(() => {
-    async function loadPartners() {
-      setLoading(true);
+    async function loadData() {
       try {
+        setLoading(true);
         const data = await fetchPartners();
-        setPartners(data);
-        setFilteredPartners(data);
-      } catch (err) {
-        console.error("Error fetching partners:", err);
+        setPartners(Array.isArray(data) ? data : []);
+        setFiltered(Array.isArray(data) ? data : []);
+      } catch {
         toast.error("Failed to load partners");
       } finally {
         setLoading(false);
       }
     }
-    loadPartners();
+    loadData();
   }, []);
 
-  // 🔍 Search + filter logic
+  // 🔍 Search & sort filters
   useEffect(() => {
-    let filtered = partners;
+    let results = partners;
 
-    if (search) {
-      const term = search.toLowerCase();
-      filtered = filtered.filter(
+    // Search by name or subject
+    if (searchTerm.trim() !== "") {
+      const term = searchTerm.toLowerCase();
+      results = results.filter(
         (p) =>
           p.name?.toLowerCase().includes(term) ||
           p.subject?.toLowerCase().includes(term)
       );
     }
 
-    if (filterSubject) {
-      filtered = filtered.filter(
-        (p) => p.subject?.toLowerCase() === filterSubject.toLowerCase()
+    // Sort
+    if (sortOption === "name") {
+      results = [...results].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+    } else if (sortOption === "subject") {
+      results = [...results].sort((a, b) =>
+        a.subject.localeCompare(b.subject)
+      );
+    } else if (sortOption === "location") {
+      results = [...results].sort((a, b) =>
+        a.location.localeCompare(b.location)
       );
     }
 
-    setFilteredPartners(filtered);
-  }, [search, filterSubject, partners]);
+    setFiltered(results);
+  }, [searchTerm, sortOption, partners]);
 
-  // 🤝 Send request
-  const handleRequest = async (partnerId) => {
+  // 🧩 Send request to a partner
+  const handleSendRequest = async (partnerId) => {
+    if (!user?.email) return toast.error("Please login first!");
     try {
+      setSending(partnerId);
       await sendRequest({
         partnerId,
-        requestedBy: user?.email || "guest@example.com",
-        message: "Let's study together!",
+        requestedBy: user.email,
+        message: "Hey! Let's study together 😊",
       });
-      toast.success("Request sent successfully!");
+      toast.success("Request sent!");
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to send request");
+      toast.error(err.response?.data?.message || "Failed to send request");
+    } finally {
+      setSending(null);
     }
   };
 
+  // 🧩 Loading state
   if (loading)
-    return <p className="text-center mt-10">Loading partners...</p>;
+    return (
+      <p className="text-center mt-10 text-gray-500">Loading partners...</p>
+    );
 
+  // 🧩 Main layout
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4 text-center">
-        Find Study Partners
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <h1 className="text-3xl font-bold mb-2 text-center">
+        🎓 Find Study Partners
       </h1>
 
-      {/* 🔎 Search & Filter Bar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-3 mb-6">
+      {/* 🔍 Search + Sort Controls */}
+      <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-4 mb-6">
         <input
           type="text"
           placeholder="Search by name or subject..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="input input-bordered w-full md:w-1/2"
+          className="input input-bordered w-full sm:w-1/2"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
 
         <select
-          className="select select-bordered w-full md:w-1/3"
-          value={filterSubject}
-          onChange={(e) => setFilterSubject(e.target.value)}
+          className="select select-bordered w-full sm:w-1/4"
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
         >
-          <option value="">All Subjects</option>
-          <option value="Math">Math</option>
-          <option value="Physics">Physics</option>
-          <option value="Chemistry">Chemistry</option>
-          <option value="Biology">Biology</option>
-          <option value="English">English</option>
+          <option value="">Sort by</option>
+          <option value="name">Name</option>
+          <option value="subject">Subject</option>
+          <option value="location">Location</option>
         </select>
       </div>
 
-      {/* 📋 Partners List */}
-      {filteredPartners.length === 0 ? (
-        <p className="text-center text-gray-500">
-          No partners match your search or filter.
-        </p>
+      {/* Partner Cards */}
+      {filtered.length === 0 ? (
+        <p className="text-center text-gray-500">No partners found.</p>
       ) : (
-        <div className="grid md:grid-cols-2 gap-4">
-          {filteredPartners.map((p) => (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filtered.map((partner) => (
             <div
-              key={p._id}
-              className="p-4 border rounded-lg shadow hover:shadow-md transition"
+              key={partner._id}
+              className="flex flex-col justify-between p-5 bg-blue-100 shadow-md rounded-2xl border border-gray-500 hover:shadow-lg transition-all"
             >
-              <h3 className="text-lg font-semibold">{p.name}</h3>
-              <p className="text-sm text-gray-500">{p.subject}</p>
-              <p className="text-sm text-gray-400">{p.email}</p>
-              <button
-                onClick={() => handleRequest(p._id)}
-                className="btn btn-primary mt-3"
-              >
-                Send Request
-              </button>
+              {/* Image */}
+              <div className="mt-4 flex flex-col items-center">
+                <img
+                  src={
+                    partner.profileImage || "https://via.placeholder.com/150"
+                  }
+                  alt={partner.name}
+                  className="w-20 h-20 rounded-full border-4 border-blue-200 object-cover shadow-md mb-2"
+                />
+                </div>
+              {/* Partner details */}
+              <div className="flex-1 space-y-1">
+                <h2 className="text-lg font-semibold text-gray-800">
+                  {partner.name}
+                </h2>
+                <p className="text-sm text-gray-600">{partner.university}</p>
+
+                <p className="text-gray-700 mt-1">
+                  <strong>Subject:</strong> {partner.subject}
+                </p>
+                <p className="text-gray-600">
+                  <strong>Level:</strong> {partner.level}
+                </p>
+                <p className="text-gray-600">
+                  <strong>Location:</strong> {partner.location}
+                </p>
+
+                {partner.description && (
+                  <p className="mt-2 text-sm text-gray-500 italic line-clamp-2">
+                    {partner.description}
+                  </p>
+                )}
+              </div>
+
+              {/* Button */}
+              <div className="mt-4 flex flex-col items-center">
+                <button
+                  onClick={() => handleSendRequest(partner._id)}
+                  disabled={sending === partner._id}
+                  className={`px-4 py-2 rounded-md text-white font-medium ${
+                    sending === partner._id
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700"
+                  }`}
+                >
+                  {sending === partner._id ? "Sending..." : "Send Request"}
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
     </div>
   );
-}
+};
+
+export default FindPartners;

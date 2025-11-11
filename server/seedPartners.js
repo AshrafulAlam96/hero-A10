@@ -25,7 +25,7 @@ async function seedPartners() {
     // Dummy partner records (20)
     const partners = [
       {
-        name: "Ashraful Alam",
+        name: "Alimullah Mian",
         subject: "Data Science",
         university: "University of Dhaka",
         level: "Intermediate",
