@@ -26,7 +26,7 @@ const Login = () => {
       await login(formData.email, formData.password);
       toast.success("Login successful 🎉");
       navigate(from, { replace: true });
-    } catch (err) {
+    } catch {
       toast.error("Invalid credentials. Try again.");
     }
   };

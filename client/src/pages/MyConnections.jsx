@@ -23,7 +23,7 @@ const MyConnections = () => {
         setLoading(true);
         const data = await fetchRequests(userEmail);
         setRequests(Array.isArray(data) ? data : []); // ✅ always array
-      } catch (err) {
+      } catch {
         toast.error("Failed to load requests");
         setRequests([]);
       } finally {
@@ -41,7 +41,7 @@ const MyConnections = () => {
       setRequests((prev) =>
         prev.map((req) => (req._id === id ? { ...req, status } : req))
       );
-    } catch (err) {
+    } catch {
       toast.error("Error updating request");
     } finally {
       setActionLoading(null);
@@ -54,7 +54,7 @@ const MyConnections = () => {
       await deleteRequest(id);
       toast.success("Request deleted");
       setRequests((prev) => prev.filter((r) => r._id !== id));
-    } catch (err) {
+    } catch {
       toast.error("Error deleting request");
     } finally {
       setActionLoading(null);

@@ -24,7 +24,7 @@ const Register = () => {
       await signup(formData.email, formData.password, formData.name, formData.photo);
       toast.success("Account created successfully 🎉");
       navigate("/my-connections");
-    } catch (err) {
+    } catch {
       toast.error("Signup failed");
     }
   };

@@ -32,7 +32,7 @@ export default function CreateProfile() {
       await createPartner({ ...form, email: user.email })
       toast.success('Profile created successfully')
       setForm({ ...form, subject: '', availabilityTime: '', location: '' })
-    } catch (err) {
+    } catch {
       toast.error('Error creating profile')
     } finally {
       setLoading(false)
