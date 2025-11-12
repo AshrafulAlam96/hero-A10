@@ -1,209 +1,149 @@
-// src/pages/CreateProfile.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { createPartner } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
 const CreateProfile = () => {
   const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
-
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
+    name: user?.displayName || "",
     university: "",
+    subject: "",
     level: "",
     location: "",
     description: "",
-    profileImage: "",
+    profileImage: user?.photoURL || "",
   });
 
-  useEffect(() => {
-    if (user) {
-      setFormData((prev) => ({
-        ...prev,
-        name: user.displayName || "",
-        email: user.email || "",
-        profileImage: user.photoURL || "",
-      }));
-    }
-  }, [user]);
+  const [saving, setSaving] = useState(false);
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  // handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
+  // save profile to DB
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user?.email) return toast.error("Please log in first");
+    if (!user?.email) return toast.error("Please login first!");
 
     try {
-      setLoading(true);
-      const res = await fetch("http://localhost:5000/api/partners", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      setSaving(true);
+      await createPartner({
+        ...formData,
+        email: user.email,
+        createdAt: new Date(),
       });
-      if (!res.ok) throw new Error("Failed to save profile");
       toast.success("Profile saved successfully!");
+      setFormData({
+        name: "",
+        university: "",
+        subject: "",
+        level: "",
+        location: "",
+        description: "",
+        profileImage: "",
+      });
     } catch (err) {
-      toast.error(err.message || "Error saving profile");
+      toast.error(err.message || "Failed to save profile");
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-3xl bg-amber-50 rounded-2xl shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-400 p-6 text-center text-white">
-          <h1 className="text-3xl font-bold">
-            {formData._id ? "Edit Your Profile" : "Create Your Study Profile"}
-          </h1>
-          <p className="mt-1 text-sm opacity-90">
-            Build your profile to connect with your perfect study partners 🎓
+    <div className="max-w-3xl mx-auto p-8 bg-white shadow-lg rounded-2xl mt-6">
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">
+        ✏️ Create / Edit Profile
+      </h1>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Profile Image Preview */}
+        <div className="flex flex-col items-center">
+          <img
+            src={
+              formData.profileImage ||
+              "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            }
+            alt="Profile Preview"
+            className="w-28 h-28 rounded-full border-4 border-blue-200 object-cover shadow-md mb-3"
+          />
+          <input
+            type="url"
+            name="profileImage"
+            placeholder="Paste image URL (e.g. https://example.com/photo.jpg)"
+            value={formData.profileImage}
+            onChange={handleChange}
+            className="input input-bordered w-full max-w-md text-center"
+          />
+          <p className="text-sm text-gray-500 mt-1">
+            Enter a direct image URL (recommended 200x200 or larger)
           </p>
         </div>
 
-        {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          {/* LEFT */}
-          <div className="space-y-5">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Full Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full p-3 rounded-lg border border-blue-300 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 shadow-sm transition"
-                placeholder="e.g., Ashraful Alam"
-              />
-            </div>
+        {/* Inputs */}
+        <div className="grid sm:grid-cols-2 gap-4">
+          <input
+            name="name"
+            placeholder="Full Name"
+            value={formData.name}
+            onChange={handleChange}
+            className="input input-bordered w-full"
+            required
+          />
+          <input
+            name="university"
+            placeholder="University / College"
+            value={formData.university}
+            onChange={handleChange}
+            className="input input-bordered w-full"
+            required
+          />
+          <input
+            name="subject"
+            placeholder="Subject / Major"
+            value={formData.subject}
+            onChange={handleChange}
+            className="input input-bordered w-full"
+          />
+          <input
+            name="level"
+            placeholder="Level (e.g. Undergraduate)"
+            value={formData.level}
+            onChange={handleChange}
+            className="input input-bordered w-full"
+          />
+          <input
+            name="location"
+            placeholder="Location"
+            value={formData.location}
+            onChange={handleChange}
+            className="input input-bordered w-full"
+          />
+        </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Email (readonly)
-              </label>
-              <input
-                type="email"
-                readOnly
-                name="email"
-                value={formData.email}
-                className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100 text-gray-600 cursor-not-allowed shadow-sm"
-              />
-            </div>
+        <textarea
+          name="description"
+          placeholder="Describe your study interests..."
+          value={formData.description}
+          onChange={handleChange}
+          rows="4"
+          className="textarea textarea-bordered w-full"
+        ></textarea>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Subject
-              </label>
-              <input
-                type="text"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                className="w-full p-3 rounded-lg border border-blue-300 bg-blue-50 focus:ring-2 focus:ring-blue-500 shadow-sm"
-                placeholder="e.g., Data Science"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                University
-              </label>
-              <input
-                type="text"
-                name="university"
-                value={formData.university}
-                onChange={handleChange}
-                className="w-full p-3 rounded-lg border border-blue-300 bg-blue-50 focus:ring-2 focus:ring-blue-500 shadow-sm"
-                placeholder="e.g., University of Dhaka"
-              />
-            </div>
-          </div>
-
-          {/* RIGHT */}
-          <div className="space-y-5">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Education Level
-              </label>
-              <select
-                name="level"
-                value={formData.level}
-                onChange={handleChange}
-                className="w-full p-3 rounded-lg border border-blue-300 bg-blue-50 focus:ring-2 focus:ring-blue-500 shadow-sm"
-              >
-                <option value="">Select level</option>
-                <option value="HSC">HSC</option>
-                <option value="Bachelor">Bachelor</option>
-                <option value="Masters">Masters</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Location
-              </label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                className="w-full p-3 rounded-lg border border-blue-300 bg-blue-50 focus:ring-2 focus:ring-blue-500 shadow-sm"
-                placeholder="e.g., Dhaka, Bangladesh"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Profile Image URL
-              </label>
-              <input
-                type="text"
-                name="profileImage"
-                value={formData.profileImage}
-                onChange={handleChange}
-                className="w-full p-3 rounded-lg border border-blue-300 bg-blue-50 focus:ring-2 focus:ring-blue-500 shadow-sm"
-                placeholder="https://randomuser.me/api/portraits/men/32.jpg"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Short Description
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full p-3 rounded-lg border border-blue-300 bg-blue-50 focus:ring-2 focus:ring-blue-500 shadow-sm h-24"
-                placeholder="Write a short bio or study interests..."
-              />
-            </div>
-          </div>
-
-          {/* BUTTON */}
-          <div className="col-span-1 md:col-span-2 mt-6 flex justify-center">
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full md:w-1/2 py-3 rounded-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-md transition ${
-                loading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
-            >
-              {loading ? "Saving..." : "Save Profile"}
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            disabled={saving}
+            className={`btn btn-primary px-8 ${
+              saving ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+          >
+            {saving ? "Saving..." : "Save Profile"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
