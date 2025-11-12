@@ -1,7 +1,9 @@
+// src/components/Navbar.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import Logo from "../assets/logo.png";
 
 export default function Navbar() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
@@ -25,18 +27,34 @@ export default function Navbar() {
     }
   };
 
+  const goToProfile = () => {
+    navigate("/profile"); // Change to /profile if you add a profile page
+  };
+
   return (
-    <nav className="bg-blue-950 text-white shadow-md">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        {/* 🔹 Logo */}
-        <Link to="/" className="text-2xl font-bold tracking-wide">
-          StudyMate
+    <nav className="fixed top-0 left-0 w-full z-50 bg-blue-950 text-amber-100 shadow-md">
+      <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+        {/* 🔹 Brand Logo */}
+        <Link
+          to="/"
+          className="text-2xl sm:text-3xl font-bold tracking-wide flex items-center gap-2"
+        >
+          <img
+            src={Logo}
+            alt="StudyMate Logo"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-md object-contain"
+          />
+          <span className="text-amber-200">StudyMate</span>
         </Link>
 
         {/* 🔹 Navigation */}
-        <div className="flex items-center gap-4">
-          <Link to="/" className="hover:text-blue-300">Home</Link>
-          <Link to="/find-partners" className="hover:text-blue-300">Find Partners</Link>
+        <div className="flex items-center gap-4 text-sm sm:text-base">
+          <Link to="/" className="hover:text-blue-300">
+            Home
+          </Link>
+          <Link to="/find-partners" className="hover:text-blue-300">
+            Find Partners
+          </Link>
 
           {user && (
             <>
@@ -54,36 +72,52 @@ export default function Navbar() {
 
           {/* 🔹 Auth Section */}
           {user ? (
-            <>
-              <div className="flex items-center gap-2 ml-3">
-                {user.photoURL ? (
-                  <img
-                    src={user.photoURL}
-                    alt="User Avatar"
-                    className="w-8 h-8 rounded-full border border-white object-cover"
-                    title={user.displayName || "User"}
-                  />
-                ) : (
-                  <div
-                    className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-sm font-semibold"
-                    title={user.displayName || "User"}
-                  >
-                    {user.displayName?.charAt(0) || "U"}
-                  </div>
-                )}
-                <span className="hidden sm:block">{user.displayName}</span>
+            <div className="relative group flex items-center gap-2 ml-3 cursor-pointer">
+              {/* Avatar */}
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt="User Avatar"
+                  onClick={goToProfile}
+                  className="w-8 h-8 rounded-full border border-white object-cover transition-transform duration-200 group-hover:scale-105"
+                />
+              ) : (
+                <div
+                  onClick={goToProfile}
+                  className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-sm font-semibold transition-transform duration-200 group-hover:scale-105"
+                >
+                  {user.displayName?.charAt(0) || "U"}
+                </div>
+              )}
+
+              {/* Name (clickable) */}
+              <span
+                onClick={goToProfile}
+                className="hidden sm:block hover:text-blue-300 font-medium transition-colors duration-200"
+              >
+                {user.displayName || "User"}
+              </span>
+
+              {/* Hover Tooltip (name + email) */}
+              <div className="absolute top-10 left-0 bg-blue-800 text-white text-xs p-2 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md">
+                <p className="font-semibold">{user.displayName || "User"}</p>
+                <p className="text-gray-300">{user.email}</p>
               </div>
 
+              {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="btn btn-sm btn-ghost border border-white text-white hover:bg-white hover:text-blue-900"
+                className="btn btn-sm btn-ghost border border-white text-white hover:bg-white hover:text-blue-900 ml-3"
               >
                 Logout
               </button>
-            </>
+            </div>
           ) : (
             <>
-              <Link to="/login" className="btn btn-sm btn-ghost text-white hover:bg-white hover:text-blue-900">
+              <Link
+                to="/login"
+                className="btn btn-sm btn-ghost text-white hover:bg-white hover:text-blue-900"
+              >
                 Login
               </Link>
               <Link to="/register" className="btn btn-sm btn-primary">
