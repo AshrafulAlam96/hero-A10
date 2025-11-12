@@ -47,7 +47,7 @@ async function seedPartners() {
         profileImage: "https://randomuser.me/api/portraits/women/2.jpg",
       },
       {
-        name: "Tanvir Ahmed",
+        name: "Jahidul Islam",
         subject: "Mathematics",
         university: "BUET",
         level: "Advanced",

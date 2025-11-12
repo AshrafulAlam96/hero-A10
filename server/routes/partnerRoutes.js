@@ -36,7 +36,7 @@ router.get("/", async (req, res) => {
     const search = req.query.search || "";
     const subject = req.query.subject || "";
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 6;
+    const limit = parseInt(req.query.limit) || 20;
 
     // Build filter
     const filter = {};
