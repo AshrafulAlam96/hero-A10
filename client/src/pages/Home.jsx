@@ -1,6 +1,8 @@
 import React from 'react'
 import HeroBanner from '../components/HeroSlider'
 import TopPartners from '../components/TopPartners'
+import HowItWorks from "../components/HowItWorks";
+import Testimonials from "../components/Testimonials";
 
 export default function Home() {
   return (
@@ -12,17 +14,13 @@ export default function Home() {
       </div>
 
       <section className="mt-10">
-        <h3 className="text-xl font-semibold text-center">How It Works</h3>
-        <ol className="list-decimal ml-6 mt-3">
-          <li>Create your study profile</li>
-          <li>Search or filter partners</li>
-          <li>Send connection requests and study together</li>
-        </ol>
+        {/* How It Works */}
+        <HowItWorks />
       </section>
 
       <section className="mt-8 text-center">
-        <h3 className="text-xl font-semibold">Testimonials</h3>
-        <div className="mt-3">“StudyMate helped me find a great study partner!” — A student</div>
+        {/* Testimonials */}
+        <Testimonials />
       </section>
     </div>
   )
