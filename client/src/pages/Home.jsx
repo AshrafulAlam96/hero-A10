@@ -1,5 +1,5 @@
 import React from 'react'
-import HeroBanner from '../components/BannerCarousel'
+import HeroBanner from '../components/HeroSlider'
 import TopPartners from '../components/TopPartners'
 
 export default function Home() {

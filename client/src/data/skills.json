@@ -1,0 +1,38 @@
+[
+  {
+    "skillId": 1,
+    "title": "Spoken English Practice",
+    "instructor": "Sara Hossain",
+    "rating": 4.6,
+    "subject": "Language",
+    "description": "Enhance your fluency, pronunciation, and vocabulary through guided English conversation sessions.",
+    "image": "https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=800"
+  },
+  {
+    "skillId": 2,
+    "title": "Intro to Python",
+    "instructor": "Rafi Ahmed",
+    "rating": 4.7,
+    "subject": "Programming",
+    "description": "Get started with Python programming and learn to build your first scripts and applications.",
+    "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800"
+  },
+  {
+    "skillId": 3,
+    "title": "Data Analysis with Excel",
+    "instructor": "Mehedi Hasan",
+    "rating": 4.5,
+    "subject": "Analytics",
+    "description": "Analyze, visualize, and summarize data effectively using Microsoft Excel tools and charts.",
+    "image": "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800"
+  },
+  {
+    "skillId": 4,
+    "title": "Digital Marketing Fundamentals",
+    "instructor": "Rumana Akter",
+    "rating": 4.7,
+    "subject": "Marketing",
+    "description": "Learn SEO, social media marketing, and email campaign strategies for brand growth.",
+    "image": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800"
+  }
+]
