@@ -2,14 +2,19 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 
 import MyConnections from "./pages/MyConnections";
+import PrivateRoute from './routes/PrivateRoute'   // ✅ Add this import
+
+import Navbar from './components/Navbar'
+import Footer from './components/Footer'
+
 import Home from './pages/Home'
 import FindPartners from './pages/FindPartners'
 import Profile from "./pages/Profile"
+import CreateProfile from "./pages/CreateProfile"
+
 import Login from './pages/Login'
 import Register from './pages/Register'
-import Navbar from './components/Navbar'
-import Footer from './components/Footer'
-import PrivateRoute from './routes/PrivateRoute'   // ✅ Add this import
+
 
 export default function App() {
   return (
@@ -31,6 +36,8 @@ export default function App() {
 
           <Route path="/find-partners" element={<FindPartners />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/create-profile" element={<CreateProfile />} />
+
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 

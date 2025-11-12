@@ -1,11 +1,14 @@
 // src/services/api.js
-const API_BASE = "http://localhost:5000/api"; // ✅ change to your backend URL if deployed
+const API_BASE = "http://localhost:5000/api"; // ✅ backend base URL
 
 // ---------- PARTNERS ----------
 export async function fetchPartners() {
   const res = await fetch(`${API_BASE}/partners`);
   if (!res.ok) throw new Error("Failed to fetch partners");
-  return res.json();
+
+  const data = await res.json();
+  // ✅ Handle if API returns { data: [...] } or just [...]
+  return Array.isArray(data) ? data : data.data || [];
 }
 
 export async function createPartner(data) {
@@ -31,7 +34,12 @@ export async function sendRequest(requestData) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(requestData),
   });
-  if (!res.ok) throw new Error("Failed to send request");
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to send request");
+  }
+
   return res.json();
 }
 
@@ -46,9 +54,7 @@ export async function updateRequestStatus(id, status) {
 }
 
 export async function deleteRequest(id) {
-  const res = await fetch(`${API_BASE}/requests/${id}`, {
-    method: "DELETE",
-  });
+  const res = await fetch(`${API_BASE}/requests/${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error("Failed to delete request");
   return res.json();
 }
