@@ -7,21 +7,20 @@ import Testimonials from "../components/Testimonials";
 export default function Home() {
   return (
     <div>
-      <HeroBanner />
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Top Study Partners</h2>
-        <TopPartners />
-      </div>
 
-      <section className="mt-10">
+      {/* Hero / Banner */}
+      <HeroBanner />
+
+      {/* Top Study Partners */}
+        <TopPartners />
+
+      
         {/* How It Works */}
         <HowItWorks />
-      </section>
 
-      <section className="mt-8 text-center">
         {/* Testimonials */}
-        <Testimonials />
-      </section>
+      <Testimonials />
+      
     </div>
   )
 }

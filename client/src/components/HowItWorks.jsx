@@ -26,10 +26,9 @@ const HowItWorks = () => {
   ];
 
   return (
-    
+      <section className="py-10 shadow-2xl">
       <div className="max-w-6xl mx-auto px-6 text-center">
-        <h2 className="text-2xl font-semibold mb-4 text-center">
-          How StudyMate Works
+        <h2 className="text-3xl font-bold mb-6">How StudyMate Works
         </h2>
         <p className="text-gray-100 text-lg mb-10 max-w-2xl mx-auto">
           StudyMate helps students connect and collaborate through four simple steps.
@@ -39,7 +38,7 @@ const HowItWorks = () => {
           {steps.map((step, index) => (
             <div
               key={index}
-              className="bg-blue-100 rounded-2xl shadow-md hover:shadow-lg transition-all p-6 flex flex-col items-center text-center"
+              className="bg-amber-50 rounded-2xl shadow-md hover:shadow-lg transition-all p-6 flex flex-col items-center text-center"
             >
               <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
                 {step.icon}
@@ -54,6 +53,7 @@ const HowItWorks = () => {
           ))}
         </div>
       </div>
+    </section>
   );
 };
 
