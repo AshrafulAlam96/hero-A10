@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaMoon, FaSun } from "react-icons/fa";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-  // Apply theme and save preference
+  // 🌓 Apply theme preference
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
@@ -18,43 +19,53 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await logout();
+      navigate("/login");
     } catch (err) {
       console.error("Logout failed:", err);
     }
   };
 
   return (
-    <nav className="bg-blue-950 text-white shadow">
+    <nav className="bg-blue-950 text-white shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Left - Logo */}
-        <Link to="/" className="text-2xl font-bold">
+        {/* 🔹 Logo */}
+        <Link to="/" className="text-2xl font-bold tracking-wide">
           StudyMate
         </Link>
 
-        {/* Right - Links & User Info */}
+        {/* 🔹 Navigation */}
         <div className="flex items-center gap-4">
-          <Link to="/" className="hover:text-primary">
-            Home
-          </Link>
-          <Link to="/find-partners" className="hover:text-primary">
-            Find Partners
-          </Link>
+          <Link to="/" className="hover:text-blue-300">Home</Link>
+          <Link to="/find-partners" className="hover:text-blue-300">Find Partners</Link>
 
-          {/* If user logged in */}
+          {user && (
+            <>
+              <Link to="/my-connections" className="hover:text-blue-300">
+                My Connections
+              </Link>
+              <Link to="/create-profile" className="hover:text-blue-300">
+                Create Profile
+              </Link>
+              <Link to="/dashboard" className="hover:text-blue-300">
+                Dashboard
+              </Link>
+            </>
+          )}
+
+          {/* 🔹 Auth Section */}
           {user ? (
             <>
-              {/* Profile photo + name */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 ml-3">
                 {user.photoURL ? (
                   <img
                     src={user.photoURL}
-                    alt="User"
-                    className="w-8 h-8 rounded-full border border-white"
+                    alt="User Avatar"
+                    className="w-8 h-8 rounded-full border border-white object-cover"
                     title={user.displayName || "User"}
                   />
                 ) : (
                   <div
-                    className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center"
+                    className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-sm font-semibold"
                     title={user.displayName || "User"}
                   >
                     {user.displayName?.charAt(0) || "U"}
@@ -63,27 +74,25 @@ export default function Navbar() {
                 <span className="hidden sm:block">{user.displayName}</span>
               </div>
 
-              {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="btn btn-ghost hover:bg-white hover:text-blue-900"
+                className="btn btn-sm btn-ghost border border-white text-white hover:bg-white hover:text-blue-900"
               >
                 Logout
               </button>
             </>
           ) : (
             <>
-              {/* If not logged in */}
-              <Link to="/login" className="btn btn-ghost">
+              <Link to="/login" className="btn btn-sm btn-ghost text-white hover:bg-white hover:text-blue-900">
                 Login
               </Link>
-              <Link to="/register" className="btn btn-primary">
+              <Link to="/register" className="btn btn-sm btn-primary">
                 Register
               </Link>
             </>
           )}
 
-          {/* 🌙 / ☀️ Theme Toggle */}
+          {/* 🔹 Theme Toggle */}
           <button
             onClick={toggleTheme}
             className="btn btn-sm btn-outline border-white text-white hover:bg-white hover:text-blue-900 flex items-center gap-2"

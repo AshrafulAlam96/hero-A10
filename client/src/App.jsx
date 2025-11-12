@@ -11,6 +11,7 @@ import Home from './pages/Home'
 import FindPartners from './pages/FindPartners'
 import Profile from "./pages/Profile"
 import CreateProfile from "./pages/CreateProfile"
+import Dashboard from "./pages/Dashboard";
 
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -33,10 +34,19 @@ export default function App() {
               </PrivateRoute>
             }
           />
+          <Route
+            path="/dashboard"
+                  element={
+                    <PrivateRoute>
+                      <Dashboard />
+                    </PrivateRoute>
+                  }
+          />
 
           <Route path="/find-partners" element={<FindPartners />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/create-profile" element={<CreateProfile />} />
+
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
