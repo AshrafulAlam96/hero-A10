@@ -28,11 +28,11 @@ export default function Navbar() {
   };
 
   const goToProfile = () => {
-    navigate("/profile"); // Change to /profile if you add a profile page
+    navigate("/profile"); // Change to /profile if you have a separate profile page
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-blue-950 text-amber-100 shadow-md">
+    <nav className="bg-blue-950 text-amber-100 shadow-md">
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
         {/* 🔹 Brand Logo */}
         <Link
@@ -116,7 +116,7 @@ export default function Navbar() {
             <>
               <Link
                 to="/login"
-                className="btn btn-sm btn-ghost text-white hover:bg-white hover:text-blue-900"
+                className="btn btn-sm btn-ghost text-amber-100 hover:bg-white hover:text-blue-900"
               >
                 Login
               </Link>
@@ -129,7 +129,7 @@ export default function Navbar() {
           {/* 🔹 Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="btn btn-sm btn-outline border-white text-white hover:bg-white hover:text-blue-900 flex items-center gap-2"
+            className="btn btn-sm btn-outline border-white text-amber-100 hover:bg-white hover:text-blue-900 flex items-center gap-2"
             title="Toggle Theme"
           >
             {theme === "light" ? <FaMoon /> : <FaSun />}

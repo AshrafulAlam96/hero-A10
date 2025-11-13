@@ -3,6 +3,7 @@ import { fetchPartners, sendRequest } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import PartnerModal from "../components/PartnerModal";
+import PartnerCard from "../components/PartnerCard"; // ✅ new import
 
 const FindPartners = () => {
   const [partners, setPartners] = useState([]);
@@ -14,7 +15,7 @@ const FindPartners = () => {
   const [selectedPartner, setSelectedPartner] = useState(null);
   const { user } = useAuth();
 
-  // 🧩 Load all partners
+  // Load data
   useEffect(() => {
     async function loadData() {
       try {
@@ -32,13 +33,12 @@ const FindPartners = () => {
     loadData();
   }, []);
 
-  // 🔍 Search & sort filters
+  // Search & sort
   useEffect(() => {
     let results = partners;
+    const term = searchTerm.trim().toLowerCase();
 
-    // Search by name or subject
-    if (searchTerm.trim() !== "") {
-      const term = searchTerm.toLowerCase();
+    if (term) {
       results = results.filter(
         (p) =>
           p.name?.toLowerCase().includes(term) ||
@@ -46,19 +46,16 @@ const FindPartners = () => {
       );
     }
 
-    // Sort options
-    if (sortOption === "name") {
-      results = [...results].sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortOption === "subject") {
-      results = [...results].sort((a, b) => a.subject.localeCompare(b.subject));
-    } else if (sortOption === "location") {
-      results = [...results].sort((a, b) => a.location.localeCompare(b.location));
+    if (sortOption) {
+      results = [...results].sort((a, b) =>
+        a[sortOption].localeCompare(b[sortOption])
+      );
     }
 
     setFiltered(results);
   }, [searchTerm, sortOption, partners]);
 
-  // 🧩 Send request
+  // Send request
   const handleSendRequest = async (partnerId) => {
     if (!user?.email) return toast.error("Please login first!");
     try {
@@ -76,7 +73,7 @@ const FindPartners = () => {
     }
   };
 
-  // 🧩 Loading UI
+  // Loading
   if (loading)
     return (
       <div className="flex justify-center items-center h-64">
@@ -118,65 +115,13 @@ const FindPartners = () => {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((partner) => (
-            <div
+            <PartnerCard
               key={partner._id}
-              className="flex flex-col justify-between p-5 bg-blue-100 shadow-md rounded-2xl border border-gray-400 hover:shadow-lg transition-all"
-            >
-              {/* Profile Image */}
-              <div className="flex justify-center mb-4">
-                <img
-                  src={
-                    partner.profileImage ||
-                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                  }
-                  alt={partner.name}
-                  className="w-20 h-20 rounded-full border-4 border-blue-300 object-cover shadow-md"
-                />
-              </div>
-
-              {/* Partner Info */}
-              <div className="text-center space-y-1">
-                <h2 className="text-lg font-semibold text-gray-800">{partner.name}</h2>
-                <p className="text-sm text-gray-600">{partner.university}</p>
-                <p className="text-gray-700">
-                  <strong>Subject:</strong> {partner.subject}
-                </p>
-                <p className="text-gray-600">
-                  <strong>Level:</strong> {partner.level}
-                </p>
-                <p className="text-gray-600">
-                  <strong>Location:</strong> {partner.location}
-                </p>
-
-                {partner.description && (
-                  <p className="text-sm text-gray-500 italic line-clamp-2">
-                    {partner.description}
-                  </p>
-                )}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="mt-4 flex flex-col items-center space-y-2">
-                <button
-                  onClick={() => setSelectedPartner(partner)}
-                  className="px-4 py-2 rounded-md border border-gray-400 hover:bg-gray-200 text-gray-700 font-medium"
-                >
-                  View Details
-                </button>
-
-                <button
-                  onClick={() => handleSendRequest(partner._id)}
-                  disabled={sending === partner._id}
-                  className={`px-4 py-2 rounded-md text-white font-medium ${
-                    sending === partner._id
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700"
-                  }`}
-                >
-                  {sending === partner._id ? "Sending..." : "Send Request"}
-                </button>
-              </div>
-            </div>
+              partner={partner}
+              onView={setSelectedPartner}
+              onSend={handleSendRequest}
+              sending={sending}
+            />
           ))}
         </div>
       )}
