@@ -1,6 +1,15 @@
 {
+  "name": "studymate-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "vercel-build": "echo 'Vercel build complete'"
+  },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "mongodb": "^7.0.0"
   }
