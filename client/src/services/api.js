@@ -1,5 +1,5 @@
 // src/services/api.js
-const API_BASE = "http://localhost:5000/api"; // ✅ backend base URL
+const API_BASE = "https://studymate-hero-a10.vercel.app/api"; // ✅ backend base URL
 
 // ---------- PARTNERS ----------
 export async function fetchPartners() {
