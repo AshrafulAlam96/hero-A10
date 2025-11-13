@@ -1,6 +1,7 @@
+// server/index.js
 const express = require("express");
 const cors = require("cors");
-const { connectDB } = require("./config/db");
+const { connectDB, client } = require("./config/db");
 
 const partnerRoutes = require("./routes/partnerRoutes");
 const requestRoutes = require("./routes/requestRoutes");
@@ -9,25 +10,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const port = 5000;
+
 // 🧠 Base route
 app.get("/", (req, res) => {
-  res.send("📡 StudyMate API is running successfully!");
+  res.send("📡 StudyMate API is running...");
 });
 
-// 🧩 Routes
+// 🧩 Route mounting
 app.use("/api/partners", partnerRoutes);
 app.use("/api/requests", requestRoutes);
 
-// 🧩 Connect MongoDB
-connectDB();
+// 🚀 Start server and connect DB
+app.listen(port, async () => {
+  await connectDB();
+  console.log(`🚀 StudyMate server running on port ${port}`);
+});
 
-// ✅ Export app (for Vercel handler)
-module.exports = app;
-
-// 🚀 Run locally (only when not in Vercel)
-if (process.env.NODE_ENV !== "production") {
-  const port = process.env.PORT || 5000;
-  app.listen(port, () => {
-    console.log(`🚀 StudyMate server running locally on port ${port}`);
-  });
-}
+// 🧹 Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("Closing MongoDB connection...");
+  await client.close();
+  process.exit(0);
+});

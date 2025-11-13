@@ -1,16 +1,74 @@
-# React + Vite
+# 🎓 StudyMate — Find Your Perfect Study Partner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack MERN-style project that connects students based on shared study interests, subjects, and goals.  
+Users can create personal profiles, browse potential study partners, and send or manage connection requests.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Live Demo
 
-## React Compiler
+Frontend (Netlify): https://studymate-hero-a10.netlify.app  
+Backend (Vercel API): https://studymate-hero-a10.vercel.app  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🧩 Core Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 👤 User Authentication
+- Email/password login & registration via **Firebase Auth**
+- Google Sign-In integration
+- Persistent login with AuthContext
+
+### 🪪 Profile Management
+- Create and edit your study profile
+- Upload profile image using direct URL
+- Store data in **MongoDB Atlas**
+- Real-time validation and success feedback
+
+### 🔎 Partner Discovery
+- Search and sort by name, subject, or location
+- Responsive partner card layout with avatars
+- “Send Request” and “View Details” modals
+
+### 💬 Connection Requests
+- Users can send, view, accept, or delete requests
+- Fully synced with MongoDB Atlas via Express routes
+- Real-time updates reflected in “My Connections” page
+
+### 📊 Dashboard
+- Displays user stats (partners, requests, accepted connections)
+- Summarized activity and performance overview
+
+### 🌗 UI/UX Features
+- Responsive layout (mobile-first)
+- Dark / Light theme toggle
+- Toast notifications for all operations
+- Tailwind CSS & DaisyUI styling
+
+---
+
+## 🏗️ Project Structure
+
+hero-A10/
+│
+├── client/ # Frontend (React + Vite)
+│ ├── src/
+│ │ ├── components/ # Navbar, Footer, PartnerModal, etc.
+│ │ ├── context/ # AuthContext.jsx
+│ │ ├── pages/ # Home, FindPartners, MyConnections, CreateProfile, Dashboard
+│ │ ├── services/ # api.js — central API service
+│ │ └── main.jsx, App.jsx
+│ ├── index.html
+│ └── package.json
+│
+├── server/ # Backend (Node.js + Express)
+│ ├── config/
+│ │ └── db.js # MongoDB Atlas connection
+│ ├── routes/
+│ │ ├── partnerRoutes.js # CRUD for profiles
+│ │ └── requestRoutes.js # CRUD for requests
+│ ├── index.js # Express app entry point
+│ └── package.json
+│
+├── .env # Environment variables
+├── .gitignore
