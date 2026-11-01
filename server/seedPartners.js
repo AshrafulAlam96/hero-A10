@@ -2,7 +2,7 @@
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const uri =
-  "mongodb+srv://hero-a10-u01:LnbcvrnPHg9imLuI@cluster0.9busnhf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+  "mongodb+srv://hero-a10-u01:LnbcvrnPHg9imLuI@cluster0.juf0jdw.mongodb.net";
 const dbName = "studymateDB";
 
 const client = new MongoClient(uri, {

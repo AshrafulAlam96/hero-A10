@@ -4,7 +4,7 @@ require("dotenv").config();
 
 const uri =
   process.env.MONGODB_URI ||
-  "mongodb+srv://hero-a10-u01:LnbcvrnPHg9imLuI@cluster0.9busnhf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+  "mongodb+srv://hero-a10-u01:LnbcvrnPHg9imLuI@cluster0.juf0jdw.mongodb.net";
 const dbName = process.env.DB_NAME || "studymateDB";
 
 let client;
