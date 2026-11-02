@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom'
 
 import MyConnections from "./pages/MyConnections";
 import PrivateRoute from './routes/PrivateRoute'   // ✅ Add this import
+import PartnerDetails from "./pages/PartnerDetails";
+import ErrorPage from "./pages/ErrorPage";
 
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -45,7 +47,21 @@ export default function App() {
 
           <Route path="/find-partners" element={<FindPartners />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/create-profile" element={<CreateProfile />} />
+          <Route path="/create-profile"
+            element={
+              <PrivateRoute>
+                <CreateProfile />
+              </PrivateRoute>
+                              } />
+          <Route path="/partner/:id"
+                        element={
+                          <PrivateRoute>
+                          <PartnerDetails />
+                        </PrivateRoute>
+                    }
+          />
+          
+          <Route path="*" element={<ErrorPage />} />
 
 
           <Route path="/login" element={<Login />} />
